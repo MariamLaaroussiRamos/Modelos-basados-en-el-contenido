@@ -2,7 +2,7 @@
 CXX = g++
 
 # Flags del compilador
-CXXFLAGS = -std=c++11 -Wall -Wextra
+CXXFLAGS = -std=c++11
 
 # Directorios
 SRC_DIR = src

@@ -1,59 +1,70 @@
 #include <iostream>
 #include <fstream>
+#include <unordered_map>
+#include <unordered_set>
 #include <vector>
-#include <sstream>
-#include <cmath>
-#include <limits>
-#include <algorithm>
-#include <numeric>
+#include <string>
+#include <iomanip>
 
 #include "tools.h"
 
+// Aquí incluirías las declaraciones de tus funciones como:
+// readDocuments, readStopWords, applyLemmatization, calculateTF, calculateIDF, calculateTFIDF, calculateCosineSimilarities, printCosineSimilarities
+
 int main(int argc, char *argv[]) {
-    Usage(argc, argv);
-
-    std::string filename = argv[1];
-    std::vector<std::vector<double>> utilityMatrix;
-    double minRating, maxRating;
-    readInputFile(filename, utilityMatrix, minRating, maxRating);
-
-
-    std::string metric = argv[2];
-    //std::cout << "Enter the similarity metric (pearson/cosine/euclidean): ";
-    //std::cin >> metric;
-
-    int k = std::stoi(argv[3]);
-    //std::cout << "Enter the number of neighbors: ";
-    //std::cin >> k;
-
-
-    std::string predictionType = argv[4];
-    //std::cout << "Enter the type of prediction (simple/mean): ";
-    //std::cin >> predictionType;
-
-    std::vector<std::vector<double>> predictedMatrix = utilityMatrix;
-
-    for (size_t userIndex = 0; userIndex < utilityMatrix.size(); ++userIndex) {
-        for (size_t itemIndex = 0; itemIndex < utilityMatrix[userIndex].size(); ++itemIndex) {
-            if (utilityMatrix[userIndex][itemIndex] == -1) {
-                std::vector<std::pair<int, double>> neighbors = findNeighbors(utilityMatrix, userIndex, itemIndex, k, metric);
-                double prediction;
-                if (predictionType == "simple") {
-                    prediction = predictSimple(utilityMatrix, userIndex, itemIndex, neighbors);
-                } else if (predictionType == "mean") {
-                    prediction = predictDiffWithMean(utilityMatrix, userIndex, itemIndex, neighbors);
-                } else {
-                    std::cerr << "Invalid prediction type!" << std::endl;
-                    return 1;
-                }
-                predictedMatrix[userIndex][itemIndex] = prediction;
-            }
-        }
+    if (argc != 4) {
+        std::cerr << "Usage: " << argv[0] << " <document_file> <stop_words_file> <lemmatization_file>" << std::endl;
+        return 1;
     }
 
-    std::cout << "Predicted Utility Matrix:" << std::endl;
-    printMatrix(predictedMatrix);
-    printMatrixinFile(predictedMatrix, "predictedMatrix.txt");
+    const std::string documentFile = argv[1];
+    const std::string stopWordsFile = argv[2];
+    const std::string lemmatizationFile = argv[3];
+
+    // Variables para almacenar datos procesados
+    std::vector<std::string> documents;
+    std::set<std::string> stopWords;
+    std::map<std::string, std::string> lemmatizationMap;
+
+
+    // Leer documentos desde el archivo
+    if (!readDocuments(documentFile, documents)) {
+        std::cerr << "Error: no se pudo leer el archivo de documentos: " << documentFile << std::endl;
+        return 1;
+    }
+
+    // Leer palabras vacías desde el archivo
+    if (!readStopWords(stopWordsFile, stopWords)) {
+        std::cerr << "Error: no se pudo leer el archivo de palabras vacías: " << stopWordsFile << std::endl;
+        return 1;
+    }
+
+    // Leer lematización desde el archivo
+    if (!readLemmatization(lemmatizationFile, lemmatizationMap)) {
+        std::cerr << "Error: no se pudo leer el archivo de lematización: " << lemmatizationFile << std::endl;
+        return 1;
+    }
+
+    // Aplicar limpieza, eliminación de stop words, y lematización en cada documento
+    preprocessDocuments(documents, stopWords, lemmatizationMap);
+
+    // Calcular TF
+    std::vector<std::unordered_map<std::string, double>> tf;
+    calculateTF(documents, tf);
+
+    // Calcular IDF
+    std::unordered_map<std::string, double> idf;
+    calculateIDF(documents, idf);
+
+    // Calcular TF-IDF
+    std::vector<std::unordered_map<std::string, double>> tfidf;
+    calculateTFIDF(tf, idf, tfidf);
+
+    // Calcular similitudes coseno
+    std::vector<std::vector<double>> cosineSimilarities = calculateCosineSimilarities(tfidf);
+
+    // Imprimir matriz de similitudes
+    printCosineSimilarities(cosineSimilarities);
+
     return 0;
 }
-
