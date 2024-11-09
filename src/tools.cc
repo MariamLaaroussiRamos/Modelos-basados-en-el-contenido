@@ -139,9 +139,15 @@ void printDocument(const std::vector<std::string> &documents,
                    const std::vector<std::unordered_map<std::string, double>> &tf,
                    const std::unordered_map<std::string, double> &idf,
                    const std::vector<std::unordered_map<std::string, double>> &tfidf) {
+    const char separator = ' ';
+    const int width = 15;
     for (size_t docIndex = 0; docIndex < documents.size(); ++docIndex) {
         std::cout << "Documento " << docIndex + 1 << ":\n";
-        std::cout << "Índice\tTérmino\t\tTF\t\tIDF\t\tTF-IDF\n";
+        std::cout << std::left << std::setw(width) << "Index" << separator
+                  << std::left << std::setw(width) << "Word" << separator
+                  << std::left << std::setw(width) << "TF" << separator
+                  << std::left << std::setw(width) << "IDF" << separator
+                  << std::left << std::setw(width) << "TF-IDF" << std::endl;
         int termIndex = 0;
         for (const auto &term : tf[docIndex]) {
             const std::string &word = term.first;
@@ -150,9 +156,10 @@ void printDocument(const std::vector<std::string> &documents,
             double tfidfValue = tfidf[docIndex].at(word);
             
             // Ajuste de formato para una salida más clara
-            std::cout << std::fixed << std::setprecision(4);
-            std::cout << termIndex++ << "\t" << word << "\t\t" << tfValue
-                      << "\t\t" << idfValue << "\t\t" << tfidfValue << "\n";
+            std::cout << termIndex++ << std::setw(width) << separator << std::left << std::setw(width) << word << separator
+                      << std::left << std::setw(width) << std::setprecision(2) << tfValue << separator
+                      << std::left << std::setw(width) << std::setprecision(2) << idfValue << separator
+                      << std::left << std::setw(width) << std::setprecision(2) << tfidfValue << std::endl;
         }
         std::cout << std::endl;
     }
