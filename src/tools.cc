@@ -21,22 +21,24 @@ void Usage(int argc, char *argv[]) {
     }
 }
 
-void readStopWords(const std::string &filename, std::set<std::string> &stopWords) {
+bool readStopWords(const std::string &filename, std::set<std::string> &stopWords) {
     std::ifstream file(filename);
     std::string word;
     while (file >> word) {
         stopWords.insert(word);
     }
     file.close();
+    return true;
 }
 
-void readLemmatization(const std::string &filename, std::map<std::string, std::string> &lemmatizationMap) {
+bool readLemmatization(const std::string &filename, std::map<std::string, std::string> &lemmatizationMap) {
     std::ifstream file(filename);
     std::string term, lemma;
     while (file >> term >> lemma) {
         lemmatizationMap[term] = lemma;
     }
     file.close();
+    return true;
 }
 
 // Lee documentos de un archivo y almacena cada línea como un documento

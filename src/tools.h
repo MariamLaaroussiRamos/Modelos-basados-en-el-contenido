@@ -14,8 +14,8 @@
 
 void Usage(int argc, char *argv[]);
 
-void readStopWords(const std::string &filename, std::set<std::string> &stopWords);
-void readLemmatization(const std::string &filename, std::map<std::string, std::string> &lemmatizationMap);
+bool readStopWords(const std::string &filename, std::set<std::string> &stopWords);
+bool readLemmatization(const std::string &filename, std::map<std::string, std::string> &lemmatizationMap);
 bool readDocuments(const std::string &filename, std::vector<std::string> &documents);
 void calculateTF(const std::vector<std::string> &documents, std::vector<std::unordered_map<std::string, double>> &tf);
 void calculateIDF(const std::vector<std::string> &documents, std::unordered_map<std::string, double> &idf);

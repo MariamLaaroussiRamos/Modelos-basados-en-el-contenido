@@ -45,9 +45,6 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    // Aplicar limpieza, eliminación de stop words, y lematización en cada documento
-    preprocessDocuments(documents, stopWords, lemmatizationMap);
-
     // Calcular TF
     std::vector<std::unordered_map<std::string, double>> tf;
     calculateTF(documents, tf);
@@ -63,8 +60,8 @@ int main(int argc, char *argv[]) {
     // Calcular similitudes coseno
     std::vector<std::vector<double>> cosineSimilarities = calculateCosineSimilarities(tfidf);
 
-    // Imprimir matriz de similitudes
-    printCosineSimilarities(cosineSimilarities);
+    // Imprimir similitudes coseno
+    printDocument(documents, tf, idf, tfidf);
 
     return 0;
 }
